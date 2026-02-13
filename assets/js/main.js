@@ -327,6 +327,46 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ============================================
+  // LAZY LOADING DE FONDOS (BACKGROUND IMAGES)
+  // ============================================
+  const backgroundElements = document.querySelectorAll('[data-bg]');
+  const setBackgroundImage = function(element) {
+    const bgUrl = element.getAttribute('data-bg');
+    if (!bgUrl) return;
+
+    const baseBackground = element.style.backgroundImage;
+    if (baseBackground && baseBackground !== 'none') {
+      element.style.backgroundImage = `${baseBackground}, url('${bgUrl}')`;
+    } else {
+      element.style.backgroundImage = `url('${bgUrl}')`;
+    }
+    element.removeAttribute('data-bg');
+  };
+
+  if (backgroundElements.length) {
+    if (!('IntersectionObserver' in window)) {
+      backgroundElements.forEach(function(element) {
+        setBackgroundImage(element);
+      });
+    } else {
+      const backgroundObserver = new IntersectionObserver(function(entries, observer) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            setBackgroundImage(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        rootMargin: '200px 0px'
+      });
+
+      backgroundElements.forEach(function(element) {
+        backgroundObserver.observe(element);
+      });
+    }
+  }
+
+  // ============================================
   // ANIMACIÓN AL HACER SCROLL (FADE IN)
   // ============================================
   const animateOnScroll = document.querySelectorAll('.animate-on-scroll');

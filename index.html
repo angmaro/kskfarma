@@ -8,20 +8,41 @@
 
   <meta charset="UTF-8">
 
-  <!-- Google Analytics 4 - Reemplaza G-E1X8EJTN0T con tu ID de medición -->
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1X8EJTN0T"></script>
+  <!-- Google Analytics 4 (deferred) -->
 
   <script>
-
     window.dataLayer = window.dataLayer || [];
-
     function gtag(){dataLayer.push(arguments);}
 
-    gtag('js', new Date());
+    (function() {
+      var measurementId = 'G-E1X8EJTN0T';
+      var hasLoadedAnalytics = false;
+      var hasConfiguredAnalytics = false;
 
-    gtag('config', 'G-E1X8EJTN0T');
+      function configureAnalytics() {
+        if (hasConfiguredAnalytics) return;
+        hasConfiguredAnalytics = true;
+        gtag('js', new Date());
+        gtag('config', measurementId);
+      }
 
+      function loadAnalytics() {
+        if (hasLoadedAnalytics) return;
+        hasLoadedAnalytics = true;
+
+        var script = document.createElement('script');
+        script.id = 'ga4-script';
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
+        script.onload = configureAnalytics;
+        document.head.appendChild(script);
+      }
+
+      setTimeout(loadAnalytics, 15000);
+      ['touchstart', 'pointerdown', 'keydown'].forEach(function(eventName) {
+        window.addEventListener(eventName, loadAnalytics, { once: true, passive: true });
+      });
+    })();
   </script>
 
   <!-- Google Search Console - Reemplaza content con tu código de verificación -->
@@ -35,8 +56,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
 
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
 
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" as="style" crossorigin>
 
@@ -786,7 +805,7 @@
 
       <div class="grid grid-3">
 
-        <div class="industry-card" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('assets/images/industries/industria-alimentos-bebidas.webp');">
+        <div class="industry-card" data-bg="assets/images/industries/industria-alimentos-bebidas.webp" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));">
 
           <div class="industry-overlay"></div>
 
@@ -804,7 +823,7 @@
 
 
 
-        <div class="industry-card" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('assets/images/industries/industria-farmaceutica.webp');">
+        <div class="industry-card" data-bg="assets/images/industries/industria-farmaceutica.webp" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));">
 
           <div class="industry-overlay"></div>
 
@@ -822,7 +841,7 @@
 
 
 
-        <div class="industry-card" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('assets/images/industries/industria-automotriz.webp');">
+        <div class="industry-card" data-bg="assets/images/industries/industria-automotriz.webp" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));">
 
           <div class="industry-overlay"></div>
 
