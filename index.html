@@ -36,7 +36,13 @@
 
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" as="style" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -100,13 +106,9 @@
 
 <!-- Stylesheet -->
 
+  <link rel="preload" href="assets/css/style.min.css" as="style">
+
   <link rel="stylesheet" href="assets/css/style.min.css">
-
-
-
-  <!-- Feather Icons -->
-
-  <script src="assets/js/feather.min.js" defer></script>
 
 <!-- Google Fonts (Opcional - Descomentar si se desea usar) -->
 

@@ -1,10 +1,49 @@
 ﻿const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+function initFeatherIcons() {
+  const featherTargets = document.querySelectorAll('[data-feather]');
+  if (!featherTargets.length) return;
+
+  const replaceIcons = function() {
+    if (window.feather && typeof window.feather.replace === 'function') {
+      window.feather.replace();
+    }
+  };
+
+  if (window.feather) {
+    replaceIcons();
+    return;
+  }
+
+  let hasLoadedFeather = false;
+  const loadFeatherScript = function() {
+    if (hasLoadedFeather) return;
+    hasLoadedFeather = true;
+
+    const mainScript = document.querySelector('script[src$="main.min.js"], script[src$="main.js"]');
+    const script = document.createElement('script');
+    script.src = mainScript && mainScript.src
+      ? new URL('feather.min.js', mainScript.src).toString()
+      : 'assets/js/feather.min.js';
+    script.defer = true;
+    script.onload = replaceIcons;
+    document.head.appendChild(script);
+  };
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(loadFeatherScript, { timeout: 1200 });
+  } else {
+    setTimeout(loadFeatherScript, 800);
+  }
+
+  ['touchstart', 'pointerdown', 'keydown', 'mousemove'].forEach(function(eventName) {
+    window.addEventListener(eventName, loadFeatherScript, { once: true, passive: true });
+  });
+}
+
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function() {
-  if (window.feather) {
-    feather.replace();
-  }
+  initFeatherIcons();
 
   // ============================================
   // NAVEGACION MOVIL
@@ -309,13 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     animateOnScroll.forEach(function(element) {
-      const rect = element.getBoundingClientRect();
-      const isInViewport = rect.top >= 0 && rect.top <= window.innerHeight;
-
-      if (isInViewport) {
-        element.classList.add('visible');
-      }
-
       scrollObserver.observe(element);
     });
   }
@@ -324,16 +356,38 @@ document.addEventListener('DOMContentLoaded', function() {
   // BOTÓN VOLVER ARRIBA
   // ============================================
   const backToTopButton = document.querySelector('.back-to-top');
+  const header = document.querySelector('.header');
+
+  const updateScrollUi = function(scrollY) {
+    if (backToTopButton) {
+      const shouldShowBackToTop = scrollY > 300;
+      if ((backToTopButton.dataset.visible || 'false') !== String(shouldShowBackToTop)) {
+        backToTopButton.dataset.visible = shouldShowBackToTop ? 'true' : 'false';
+        backToTopButton.style.display = shouldShowBackToTop ? 'flex' : 'none';
+      }
+    }
+
+    if (header) {
+      const shouldElevateHeader = scrollY > 100;
+      if ((header.dataset.elevated || 'false') !== String(shouldElevateHeader)) {
+        header.dataset.elevated = shouldElevateHeader ? 'true' : 'false';
+        header.style.boxShadow = shouldElevateHeader ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'var(--box-shadow)';
+      }
+    }
+  };
+
+  let scrollTicking = false;
+  const handleScroll = function() {
+    if (scrollTicking) return;
+    scrollTicking = true;
+
+    requestAnimationFrame(function() {
+      updateScrollUi(window.pageYOffset || window.scrollY || 0);
+      scrollTicking = false;
+    });
+  };
 
   if (backToTopButton) {
-    window.addEventListener('scroll', function() {
-      if (window.pageYOffset > 300) {
-        backToTopButton.style.display = 'flex';
-      } else {
-        backToTopButton.style.display = 'none';
-      }
-    });
-
     backToTopButton.addEventListener('click', function(e) {
       e.preventDefault();
       window.scrollTo({
@@ -341,6 +395,11 @@ document.addEventListener('DOMContentLoaded', function() {
         behavior: 'smooth'
       });
     });
+  }
+
+  if (backToTopButton || header) {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    updateScrollUi(window.pageYOffset || window.scrollY || 0);
   }
 
   // ============================================
@@ -422,24 +481,6 @@ document.addEventListener('DOMContentLoaded', function() {
       counterObserver.observe(counter);
     });
   }
-
-  // ============================================
-  // HEADER STICKY CON SOMBRA AL SCROLL
-  // ============================================
-  const header = document.querySelector('.header');
-  let lastScroll = 0;
-
-  window.addEventListener('scroll', function() {
-    const currentScroll = window.pageYOffset;
-
-    if (currentScroll > 100) {
-      header.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-    } else {
-      header.style.boxShadow = 'var(--box-shadow)';
-    }
-
-    lastScroll = currentScroll;
-  });
 
 });
 
