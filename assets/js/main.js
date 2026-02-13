@@ -442,13 +442,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // CONTADOR ANIMADO (ESTADÍSTICAS)
   // ============================================
   const counters = document.querySelectorAll('.stat-number');
+  const formatCounterValue = function(value, counter) {
+    const suffix = counter.dataset.suffix || '';
+    if (value >= 1000000) {
+      return Math.floor(value / 1000000) + 'M' + suffix;
+    }
+    return value + suffix;
+  };
 
   if (prefersReducedMotion || !('IntersectionObserver' in window)) {
     counters.forEach(function(counter) {
-      const target = counter.getAttribute('data-target');
-      const suffix = counter.dataset.suffix || '';
-      if (target) {
-        counter.textContent = target + suffix;
+      const target = parseInt(counter.getAttribute('data-target'), 10);
+      if (!isNaN(target)) {
+        counter.textContent = formatCounterValue(target, counter);
       }
     });
   } else {
@@ -456,7 +462,11 @@ document.addEventListener('DOMContentLoaded', function() {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
           const counter = entry.target;
-          const target = parseInt(counter.getAttribute('data-target'));
+          const target = parseInt(counter.getAttribute('data-target'), 10);
+          if (isNaN(target)) {
+            counterObserver.unobserve(counter);
+            return;
+          }
           const duration = 2000;
           const increment = target / (duration / 16);
           let current = 0;
@@ -464,10 +474,10 @@ document.addEventListener('DOMContentLoaded', function() {
           const updateCounter = function() {
             current += increment;
             if (current < target) {
-              counter.textContent = Math.floor(current) + (counter.dataset.suffix || '');
+              counter.textContent = formatCounterValue(Math.floor(current), counter);
               requestAnimationFrame(updateCounter);
             } else {
-              counter.textContent = target + (counter.dataset.suffix || '');
+              counter.textContent = formatCounterValue(target, counter);
             }
           };
 
